@@ -1,0 +1,90 @@
+# Import Modules
+from machine import Pin
+import time
+
+# Define Track Detection
+track0 = Pin(16, Pin.IN, Pin.PULL_DOWN) #enter
+track1 = Pin(17, Pin.IN, Pin.PULL_DOWN) #mid
+track2 = Pin(18, Pin.IN, Pin.PULL_DOWN) #clear
+
+# Define Led
+S18Green = Pin(15, Pin.OUT) # Entrance
+S18Red   = Pin(14, Pin.OUT)
+
+S19Green = Pin(13, Pin.OUT) # Tunnel
+S19Red   = Pin(12, Pin.OUT)
+
+S20Green = Pin(11, Pin.OUT) # Bank Reverse
+S20Red   = Pin(10, Pin.OUT)
+
+#
+S18Green.value(1)
+S18Red.value(1)
+
+S19Green.value(1)
+S19Red.value(1)
+
+S20Green.value(1)
+S20Red.value(1)
+print('LED SAFE')
+
+# Order of Play
+#1)tunnel occupied-S18 and s20 to red
+#2)Tunnel occupied and then 2nd section occupied- s19 to red
+#3)Both occupied and tunnel clears- s18 to green
+#4)both clear- all to green, this is the main 'reset state'
+#5)2nd section occupied while tunnel is clear- s18, s19, s20 all red
+#6)tunnel become occupied while 2nd occupied- s18, s19, s20 all red
+#7)2nd section clears while tunnel occupied- s19 to green
+
+SecLock0=0
+SecLock1=0
+SecLock2=0
+
+while True:
+    # 1)tunnel occupied-S18 and s20 to red
+    if track0.value() == 1 and SecLock0 == 0 and SecLock1 == 0:
+        print('Train Detected')
+        SecLock0 = 1
+        S18Red.value(0) # 0 ON 1 OFF
+        S20Red.value(0)
+        time.sleep(0.1)
+    else:
+        SecLock0 = 0
+
+    #2)Tunnel occupied and then 2nd section occupied- s19 to red
+    if track0.value() == 1 and track1.value() == 1 and SecLock0 == 1 and SecLock1 == 0:
+        print('Train Detected Second Section')
+        SecLock0 = 1
+        SecLock1 = 1
+        S19Red.value(0) # 0 ON 1 OFF
+        time.sleep(0.1)
+        
+    #3)Both occupied and tunnel clears- s18 to green
+    if track0.value() == 1 and track1.value() == 1 and track2.value() == 1:
+        print('Train Clear')
+        S18Red.value(1)
+        S18Green.value(0)
+        time.sleep(0.1)
+        
+    #4)both clear- all to green, this is the main 'reset state'
+    if track0.value() == 0 and track1.value() == 0 and track2.value() == 0:
+        S18Green.value(0)
+        S18Red.value(1)
+        S19Green.value(0)
+        S19Red.value(1)
+        S20Green.value(0)
+        S20Red.value(1)
+        time.sleep(0.1)
+        
+    #5)2nd section occupied while tunnel is clear- s18, s19, s20 all red
+    if track0.value() == 0 and track1.value() == 1 and track2.value() == 0:
+        S18Red.value(0)
+        S19Red.value(0)
+        S20Red.value(0)
+        time.sleep(0.1)
+        
+    #6)tunnel become occupied while 2nd occupied- s18, s19, s20 all red
+    
+    #7)2nd section clears while tunnel occupied- s19 to green
+    if track2.value() == 0    
