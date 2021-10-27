@@ -58,8 +58,6 @@ while True:
     # Define Circuit Values
     if track0.value() == 1 and track1.value() == 0:
         # State 1 = Tunnel Occupied
-        Circuit0 = 1
-        Circuit1 = 0
         State = 1
         time.sleep(0.1)
         print("Section1")
@@ -67,8 +65,6 @@ while True:
 
     if track0.value() == 0 and track1.value() == 1:
         # State 2 = bank Occupied
-        Circuit0 = 0
-        Circuit1 = 1
         State = 2
         time.sleep(0.1)
         print("Section2")
@@ -76,8 +72,6 @@ while True:
 
     if track0.value() == 1 and track1.value() == 1:
         # State 3 = Both Occupied
-        Circuit0 = 1
-        Circuit1 = 1
         State = 3
         time.sleep(0.1)
         print("SectionBoth")
@@ -171,7 +165,7 @@ while True:
             S20Red.value(0)
             State = 0
             time.sleep(0.1)
-            
+
     while State == 3:
         print("Starting State 3")
         # 6)tunnel become occupied while 2nd occupied- s18, s19, s20 all red
